@@ -24,18 +24,20 @@ local res, code = http.request{
 }
 -- if response or code != 200 ...
 if not res or code ~= 200 then
-    ngx.status = 503
-    ngx.say("parity request failed: ", code)
+    print("A")
+--    ngx.status = 503
+--    ngx.say("parity request failed: ", code)
     return
 end
 data = cjson.decode(table.concat(response_body))
 if data.result then
-    ngx.status = 503
-    ngx.say(string.format("parity syncing: %s, %s, %s",
-        data.result.startingBlock,
-        data.result.currentBlock,
-        data.result.highestBlock
-    ))
+    print("B")
+--    ngx.status = 503
+--    ngx.say(string.format("parity syncing: %s, %s, %s",
+--        data.result.startingBlock,
+--        data.result.currentBlock,
+--        data.result.highestBlock
+--    ))
     return
 end
 -- check latest block timestamp
@@ -53,8 +55,9 @@ local res, code = http.request{
         sink = ltn12.sink.table(response_body),
 }
 if not res or code ~= 200 then
-    ngx.status = 503
-    ngx.say("parity request failed: ", code)
+    print("C")
+--    ngx.status = 503
+--    ngx.say("parity request failed: ", code)
     return
 end
 data = cjson.decode(table.concat(response_body))
@@ -74,14 +77,16 @@ local res, code = http.request{
         sink = ltn12.sink.table(response_body),
 }
 if not res or code ~= 200 then
-    ngx.status = 503
-    ngx.say("parity request failed: ", code)
+    print("D")
+--    ngx.status = 503
+--    ngx.say("parity request failed: ", code)
     return
 end
 data = cjson.decode(table.concat(response_body))
 timestamp = tonumber(data.result.timestamp)
 if timestamp < os.time() - {{ parity_old_block }} then
-    ngx.status = 503
-    ngx.say("latest block too old: ", timestamp)
+    print("E")
+--    ngx.status = 503
+--    ngx.say("latest block too old: ", timestamp)
     return
 end
