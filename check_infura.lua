@@ -23,8 +23,9 @@ local body, code, headers, status = https.request{
         sink = ltn12.sink.table(response_body),
 }
 -- if response or code != 200 ...
-if not code or status ~= 200 then
+if not body or code ~= 200 then
     print("parity request failed:", status)
+    os.exit(1)
     return
 end
 data = cjson.decode(table.concat(response_body))
@@ -50,8 +51,9 @@ local body, code, headers, status = https.request{
         source = ltn12.source.string(request_body),
         sink = ltn12.sink.table(response_body),
 }
-if not code or status ~= 200 then
+if not body or code ~= 200 then
     print("Can't get number of most recent block:", status)
+    os.exit(1)
     return
 end
 data = cjson.decode(table.concat(response_body))
@@ -70,13 +72,18 @@ local body, code, headers, status = https.request{
         source = ltn12.source.string(request_body),
         sink = ltn12.sink.table(response_body),
 }
-if not code or status ~= 200 then
+if not body or code ~= 200 then
     print("Parity req failed:", status)
+    os.exit(1)    
     return
 end
 data = cjson.decode(table.concat(response_body))
 timestamp = tonumber(data.result.timestamp)
-if timestamp < os.time() - {{ parity_old_block }} then
+--if timestamp < os.time() - {{ parity_old_block }} then
+if timestamp < os.time() - 100 then
     print("Latest block too old", timestamp)
-    return
+    os.exit(1)
+    return 
 end
+-- in case of success checks return:
+print("Success\n")
